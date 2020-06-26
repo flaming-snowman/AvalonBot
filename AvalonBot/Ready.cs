@@ -14,6 +14,7 @@ namespace AvalonBot
 	public class Ready : ModuleBase<SocketCommandContext>
     {
 		private static List<ulong> readylist = new List<ulong>();
+		private static readonly Random random = new Random();
 		private string GetReadyMsg(List<ulong> ready)
         {
 			string message = "";
@@ -49,7 +50,8 @@ namespace AvalonBot
 			{
 				EmbedBuilder readyBuilder = new EmbedBuilder();
 				string message = GetReadyMsg(readylist);
-				readyBuilder.WithDescription(message);
+				readyBuilder.WithDescription(message)
+							.WithTitle("List of Everyone Ready");
 				await ReplyAsync("", false, readyBuilder.Build());
 			}
 		}
@@ -76,7 +78,8 @@ namespace AvalonBot
 		{
 			EmbedBuilder readyBuilder = new EmbedBuilder();
 			string message = GetReadyMsg(readylist);
-			readyBuilder.WithDescription(message);
+			readyBuilder.WithDescription(message)
+						.WithTitle("List of Everyone Ready");
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
 		[Command("shuffle")]
@@ -85,7 +88,9 @@ namespace AvalonBot
 			List<ulong> shuffledlist = readylist.OrderBy(i => Guid.NewGuid()).ToList(); //cheese shuffling algorithm
 			EmbedBuilder readyBuilder = new EmbedBuilder();
 			string message = GetReadyMsg(shuffledlist);
-			readyBuilder.WithDescription(message);
+			readyBuilder.WithDescription(message)
+						.WithTitle("Shuffled!")
+						.WithColor(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
 	}
