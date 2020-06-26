@@ -71,6 +71,15 @@ namespace AvalonBot
 				await ReplyAsync($"{user.Mention} is already unreadied.");
 			}
         }
-    }
+		[Command("shuffle")]
+		public async Task ShuffleAsync()
+		{
+			List<ulong> shuffledlist = readylist.OrderBy(i => Guid.NewGuid()).ToList();
+			EmbedBuilder readyBuilder = new EmbedBuilder();
+			string message = GetReadyMsg(shuffledlist);
+			readyBuilder.WithDescription(message);
+			await ReplyAsync("", false, readyBuilder.Build());
+		}
+	}
 }
 
