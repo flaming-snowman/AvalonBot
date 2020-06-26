@@ -71,10 +71,18 @@ namespace AvalonBot
 				await ReplyAsync($"{user.Mention} is already unreadied.");
 			}
         }
+		[Command("listready")]
+		public async Task ListReadyAsync()
+		{
+			EmbedBuilder readyBuilder = new EmbedBuilder();
+			string message = GetReadyMsg(readylist);
+			readyBuilder.WithDescription(message);
+			await ReplyAsync("", false, readyBuilder.Build());
+		}
 		[Command("shuffle")]
 		public async Task ShuffleAsync()
 		{
-			List<ulong> shuffledlist = readylist.OrderBy(i => Guid.NewGuid()).ToList();
+			List<ulong> shuffledlist = readylist.OrderBy(i => Guid.NewGuid()).ToList(); //cheese shuffling algorithm
 			EmbedBuilder readyBuilder = new EmbedBuilder();
 			string message = GetReadyMsg(shuffledlist);
 			readyBuilder.WithDescription(message);
