@@ -22,12 +22,16 @@ namespace AvalonBot
 			await ReplyAsync("", false, test.Build());
         }
 		[Command("ready")]
-		public async Task ReadyAsync()
+		public async Task ReadyAsync(IUser user=null)
 		{
-			ulong id = Context.User.Id;
+			if(user==null)
+            {
+				user = Context.User;
+            }
+			ulong id = user.Id;
 			if (!readylist.Contains(id))
 			{
-				await ReplyAsync($"{Context.User.Mention} has readied up.");
+				await ReplyAsync($"{user.Mention} has readied up.");
 				readylist.Add(id);
 			}
 			else
@@ -46,14 +50,22 @@ namespace AvalonBot
 			}
 		}
 		[Command("unready")]
-		public async Task UnreadyAsync()
+		public async Task UnreadyAsync(IUser user = null)
 		{
-			ulong id = Context.User.Id;
+			if (user == null)
+			{
+				user = Context.User;
+			}
+			ulong id = user.Id;
 			if (readylist.Contains(id))
             {
 				readylist.Remove(id);
-            }
-			await ReplyAsync($"{Context.User.Mention} has unreadied.");
+				await ReplyAsync($"{user.Mention} has unreadied.");
+			}
+			else
+            {
+				await ReplyAsync($"{user.Mention} is already unreadied.");
+			}
         }
     }
 }
