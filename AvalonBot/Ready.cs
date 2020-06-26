@@ -14,6 +14,17 @@ namespace AvalonBot
 	public class Ready : ModuleBase<SocketCommandContext>
     {
 		private static List<ulong> readylist = new List<ulong>();
+		private string GetReadyMsg(List<ulong> ready)
+        {
+			string message = "";
+			int i = 1;
+			foreach (ulong name in ready)
+			{
+				message += $"{i}. <@{name}> \n";
+				i++;
+			}
+			return message;
+		}
 		[Command ("test"), RequireOwner]
 		public async Task Test()
         {
@@ -36,15 +47,8 @@ namespace AvalonBot
 			}
 			else
 			{
-				string message = "";
 				EmbedBuilder readyBuilder = new EmbedBuilder();
-				readylist = readylist.OrderBy(i => Guid.NewGuid()).ToList();
-				int i = 1;
-				foreach (ulong name in readylist)
-				{
-					message += $"{i}. <@{name}> \n";
-					i++;
-				}
+				string message = GetReadyMsg(readylist);
 				readyBuilder.WithDescription(message);
 				await ReplyAsync("", false, readyBuilder.Build());
 			}
