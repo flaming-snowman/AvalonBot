@@ -94,6 +94,16 @@ namespace AvalonBot
 						.WithColor(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
+		[Command("clear"), RequireOwner]
+		public async Task ClearAsync()
+		{
+			ClearList();
+			await ReplyAsync("Ready list cleared");
+		}
+		public static void ClearList()
+		{
+			readylist.Clear();
+		}
 	}
 	public static class ReadyAnnounce
     {
@@ -138,6 +148,7 @@ namespace AvalonBot
 			var channel = guild.TextChannels.FirstOrDefault(x => x.Name == "avalon");
 			var role = guild.Roles.FirstOrDefault(x => x.Name == "Avalon");
 			await channel.SendMessageAsync($"{role.Mention}, Avalon starts in 5 minutes. Ready up now.");
+			Ready.ClearList();
 			CheckTime(guild);
 		}
 	}
