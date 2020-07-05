@@ -32,6 +32,7 @@ namespace AvalonBot
            
             //event subscriptions
             _client.Log += Log;
+            _client.Ready += OnLogin;
 
             await RegisterCommandsAsync();
 
@@ -41,11 +42,18 @@ namespace AvalonBot
 
             await _client.SetGameAsync("avalon");
 
-            Console.WriteLine("V1");
+            Console.WriteLine("V2");
 
             await Task.Delay(-1);
         }
 
+        private Task OnLogin()
+        {
+            var guild = _client.GetGuild(425423740927737866);
+            ReadyAnnounce.CheckTime(guild);
+
+            return Task.CompletedTask;
+        }
 
         private Task Log(LogMessage arg)
         {

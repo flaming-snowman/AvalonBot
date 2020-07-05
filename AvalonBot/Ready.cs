@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -92,6 +93,52 @@ namespace AvalonBot
 						.WithTitle("Shuffled!")
 						.WithColor(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
 			await ReplyAsync("", false, readyBuilder.Build());
+		}
+	}
+	public static class ReadyAnnounce
+    {
+		private static SocketGuild guild;
+		internal static void CheckTime(SocketGuild sguild)
+		{
+			guild = sguild;
+			//Time when method needs to be called
+			var Today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 20, 55, 0);
+			var NextThurs = Today.AddDays(((int)DayOfWeek.Thursday - (int)Today.DayOfWeek+7)%7);
+			var NextSun = Today.AddDays(((int)DayOfWeek.Sunday - (int)Today.DayOfWeek+7)%7);
+
+			if(NextThurs < DateTime.Now)
+            {
+				NextThurs=NextThurs.AddDays(7);
+            }
+			if (NextSun < DateTime.Now)
+			{
+				NextSun = NextSun.AddDays(7);
+			}
+
+			DateTime NextTime;
+			if(NextThurs<NextSun)
+            {
+				NextTime = NextThurs;
+            }
+            else
+            {
+				NextTime = NextSun;
+            }
+
+			TimeSpan ts = NextTime - DateTime.Now;
+			//waits certan time and run the code
+			Timer ReadyTimer = new Timer(ts.TotalMilliseconds);
+			ReadyTimer.AutoReset = false;
+			ReadyTimer.Start();
+			Console.WriteLine($"Timer started for {(DateTime.Now + ts).DayOfWeek}, {DateTime.Now + ts}");
+			ReadyTimer.Elapsed += ReadyTimer_Elapsed;
+		}
+		private static async void ReadyTimer_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			var channel = guild.TextChannels.FirstOrDefault(x => x.Name == "avalon");
+			var role = guild.Roles.FirstOrDefault(x => x.Name == "Avalon");
+			await channel.SendMessageAsync($"{role.Mention}, Avalon starts in 5 minutes. Ready up now.");
+			CheckTime(guild);
 		}
 	}
 }
