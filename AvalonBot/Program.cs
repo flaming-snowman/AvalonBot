@@ -46,11 +46,15 @@ namespace AvalonBot
 
             await Task.Delay(-1);
         }
-
+        bool firstLogin = true;
         private Task OnLogin()
         {
-            var guild = _client.GetGuild(425423740927737866);
-            ReadyAnnounce.CheckTime(guild);
+            if(firstLogin)
+            {
+                var guild = _client.GetGuild(425423740927737866);
+                ReadyAnnounce.CheckTime(guild);
+            }
+            firstLogin = false;
 
             return Task.CompletedTask;
         }

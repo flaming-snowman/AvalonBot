@@ -136,14 +136,14 @@ namespace AvalonBot
             }
 
 			TimeSpan ts = NextTime - DateTime.Now;
-            //waits certan time and run the code
-            Timer ReadyTimer = new Timer(ts.TotalMilliseconds)
-            {
-                AutoReset = false
+			//waits until next game to run
+			Timer ReadyTimer = new Timer(ts.TotalMilliseconds)
+			{
+				AutoReset = false
             };
+			ReadyTimer.Elapsed += ReadyTimer_Elapsed;
             ReadyTimer.Start();
 			Console.WriteLine($"Timer started for {(DateTime.Now + ts).DayOfWeek}, {DateTime.Now + ts}");
-			ReadyTimer.Elapsed += ReadyTimer_Elapsed;
 		}
 		private static async void ReadyTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
@@ -151,7 +151,6 @@ namespace AvalonBot
 			var role = guild.Roles.FirstOrDefault(x => x.Name == "Avalon");
 			await channel.SendMessageAsync($"{role.Mention}, Avalon starts in 5 minutes. Ready up now.");
 			Ready.ClearList();
-			System.Threading.Thread.Sleep(1000);
 			CheckTime(guild);
 		}
 	}
