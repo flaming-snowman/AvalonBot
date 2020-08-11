@@ -27,13 +27,6 @@ namespace AvalonBot
 			}
 			return message;
 		}
-		[Command ("test"), RequireOwner]
-		public async Task Test()
-        {
-			EmbedBuilder test = new EmbedBuilder();
-			test.WithDescription("Hello World");
-			await ReplyAsync("", false, test.Build());
-        }
 		[Command("ready")]
 		public async Task ReadyAsync(IUser user=null)
 		{
@@ -74,7 +67,7 @@ namespace AvalonBot
 				await ReplyAsync($"{user.Mention} is already unreadied.");
 			}
         }
-		[Command("listready")]
+		[Command("list")]
 		public async Task ListReadyAsync()
 		{
 			EmbedBuilder readyBuilder = new EmbedBuilder();
@@ -94,7 +87,7 @@ namespace AvalonBot
 						.WithColor(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
-		[Command("clear"), RequireOwner]
+		[Command("clear"), RequireUserPermission(ChannelPermission.ManageMessages)]
 		public async Task ClearAsync()
 		{
 			ClearList();
