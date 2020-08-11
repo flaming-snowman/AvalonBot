@@ -28,6 +28,7 @@ namespace AvalonBot
 			return message;
 		}
 		[Command("ready")]
+		[Alias("add")]
 		public async Task ReadyAsync(IUser user=null)
 		{
 			if(user==null)
@@ -50,6 +51,7 @@ namespace AvalonBot
 			}
 		}
 		[Command("unready")]
+		[Alias("rm")]
 		public async Task UnreadyAsync(IUser user = null)
 		{
 			if (user == null)
@@ -68,6 +70,7 @@ namespace AvalonBot
 			}
         }
 		[Command("list")]
+		[Alias("ls")]
 		public async Task ListReadyAsync()
 		{
 			EmbedBuilder readyBuilder = new EmbedBuilder();
@@ -77,6 +80,7 @@ namespace AvalonBot
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
 		[Command("shuffle")]
+		[Alias("shuf")]
 		public async Task ShuffleAsync()
 		{
 			List<ulong> shuffledlist = readylist.OrderBy(i => Guid.NewGuid()).ToList(); //cheese shuffling algorithm
@@ -88,6 +92,7 @@ namespace AvalonBot
 			await ReplyAsync("", false, readyBuilder.Build());
 		}
 		[Command("clear"), RequireUserPermission(ChannelPermission.ManageMessages)]
+		[Alias("clr")]
 		public async Task ClearAsync()
 		{
 			ClearList();
