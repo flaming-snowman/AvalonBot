@@ -98,6 +98,41 @@ namespace AvalonBot
 			ClearList();
 			await ReplyAsync("Ready list cleared");
 		}
+		[Command("setdays"), RequireOwner]
+		public async Task SetDaysAsync(string daystring)
+		{
+			//expect days as binary string
+			if(daystring.Length!=7)
+            {
+				await ReplyAsync("Error: string length is not 7");
+				return;
+            }
+			int intdays = Convert.ToInt32(daystring, 2);
+			ReadyAnnounce.ChangeDays(intdays);
+			string days = ReadyAnnounce.GetDays();
+			await ReplyAsync($"Days changed to {days}");
+		}
+		[Command("sethour"), RequireOwner]
+		public async Task SetHourAsync(int hour)
+		{
+			ReadyAnnounce.ChangeHour(hour);
+			string time = ReadyAnnounce.GetTime();
+			await ReplyAsync($"Time changed to {time}");
+		}
+		[Command("setmin"), RequireOwner]
+		public async Task SetMinAsync(int min)
+		{
+			ReadyAnnounce.ChangeMin(min);
+			string time = ReadyAnnounce.GetTime();
+			await ReplyAsync($"Time changed to {time}");
+		}
+		[Command("settings")]
+		public async Task SettingsASync()
+        {
+			string days = ReadyAnnounce.GetDays();
+			string time = ReadyAnnounce.GetTime();
+			await ReplyAsync($"Days: {days} at {time}");
+        }
 		public static void ClearList()
 		{
 			readylist.Clear();
@@ -119,8 +154,53 @@ namespace AvalonBot
 				min = int.Parse(file.ReadLine());
             }
 		}
+		private static void SaveReadyData()
+		{
+			string data = $"{days}\n{hour}\n{min}";
+			File.WriteAllText("datetimes.txt", data);
+		}
+		internal static void ChangeDays(int newdays)
+        {
+			days = newdays;
+			CheckTime(guild);
+			SaveReadyData();
+        }
+		internal static void ChangeHour(int newhour)
+		{
+			hour = newhour;
+			CheckTime(guild);
+			SaveReadyData();
+		}
+		internal static void ChangeMin(int newmin)
+		{
+			min = newmin;
+			CheckTime(guild);
+			SaveReadyData();
+		}
+		internal static string GetDays()
+        {
+			if(days==0)
+            {
+				return "None";
+            }
+			string[] dayofweek = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+			string result = "";
+			for(int i = 0; i<7; i++)
+            {
+				if((days & (1<<(6-i))) != 0)
+                {
+					result += dayofweek[i] + ", ";
+                }
+            }
+			return result.Remove(result.Length - 2);
+        }
+		internal static string GetTime()
+		{
+			return $"{hour}:" + min.ToString("00");
+        }
 
 		private static SocketGuild guild;
+		private static Timer ReadyTimer;
 		internal static void CheckTime(SocketGuild sguild)
 		{
 			guild = sguild;
@@ -135,7 +215,7 @@ namespace AvalonBot
 			for(int i = 0; i<7; i++)
             {
 				//bitwise flags for if timer should be called on that day of the week
-				if ((days & (2 << i)) == 0) continue;
+				if ((days & (1 << (6-i))) == 0) continue;
 				next = Today.AddDays((i - (int)Today.DayOfWeek + 7) % 7);
 				if(next<DateTime.Now)
                 {
@@ -148,7 +228,7 @@ namespace AvalonBot
             }
 			TimeSpan ts = NextTime - DateTime.Now;
 			//waits until next time to run
-			Timer ReadyTimer = new Timer(ts.TotalMilliseconds)
+			ReadyTimer = new Timer(ts.TotalMilliseconds)
 			{
 				AutoReset = false
             };
