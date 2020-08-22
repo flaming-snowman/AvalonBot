@@ -124,12 +124,17 @@ namespace AvalonBot
 		internal static void CheckTime(SocketGuild sguild)
 		{
 			guild = sguild;
+			if (days == 0)
+            {
+				Console.WriteLine("No timer started");
+				return;
+            }
 			//Time when method needs to be called
 			var Today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, min, 0);
 			DateTime next, NextTime=Today.AddDays(7);
 			for(int i = 0; i<7; i++)
             {
-				//bitwise flags
+				//bitwise flags for if timer should be called on that day of the week
 				if ((days & (2 << i)) == 0) continue;
 				next = Today.AddDays((i - (int)Today.DayOfWeek + 7) % 7);
 				if(next<DateTime.Now)
