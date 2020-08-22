@@ -105,36 +105,44 @@ namespace AvalonBot
 	}
 	public static class ReadyAnnounce
     {
+		private static int days;
+		private static int hour;
+		private static int min;
+
+		static ReadyAnnounce()
+		{
+			if(File.Exists("datetimes.txt"))
+            {
+				StreamReader file = new StreamReader("datetimes.txt");
+				days = int.Parse(file.ReadLine());
+				hour = int.Parse(file.ReadLine());
+				min = int.Parse(file.ReadLine());
+            }
+		}
+
 		private static SocketGuild guild;
 		internal static void CheckTime(SocketGuild sguild)
 		{
 			guild = sguild;
 			//Time when method needs to be called
-			var Today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 20, 55, 0);
-			var NextThurs = Today.AddDays(((int)DayOfWeek.Thursday - (int)Today.DayOfWeek+7)%7);
-			var NextSun = Today.AddDays(((int)DayOfWeek.Sunday - (int)Today.DayOfWeek+7)%7);
-
-			if(NextThurs < DateTime.Now)
+			var Today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, min, 0);
+			DateTime next, NextTime=Today.AddDays(7);
+			for(int i = 0; i<7; i++)
             {
-				NextThurs=NextThurs.AddDays(7);
+				//bitwise flags
+				if ((days & (2 << i)) == 0) continue;
+				next = Today.AddDays((i - (int)Today.DayOfWeek + 7) % 7);
+				if(next<DateTime.Now)
+                {
+					next = next.AddDays(7);
+                }
+				if(next<NextTime)
+                {
+					NextTime = next;
+                }
             }
-			if (NextSun < DateTime.Now)
-			{
-				NextSun = NextSun.AddDays(7);
-			}
-
-			DateTime NextTime;
-			if(NextThurs<NextSun)
-            {
-				NextTime = NextThurs;
-            }
-            else
-            {
-				NextTime = NextSun;
-            }
-
 			TimeSpan ts = NextTime - DateTime.Now;
-			//waits until next game to run
+			//waits until next time to run
 			Timer ReadyTimer = new Timer(ts.TotalMilliseconds)
 			{
 				AutoReset = false
